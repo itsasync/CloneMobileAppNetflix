@@ -56,7 +56,7 @@ export default function TabTwoScreen() {
     // appeler le backend
     const fetchData = async () => {
       // declenche le /series
-      const reponse = await fetch("http://localhost:3000/series", {
+      const reponse = await fetch("http://72.61.102.58:3000/series", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
