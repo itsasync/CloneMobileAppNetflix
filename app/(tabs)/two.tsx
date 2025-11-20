@@ -3,6 +3,7 @@ import { StyleSheet, Image, ScrollView } from 'react-native';
 import { Text, View } from '@/components/Themed';
 
 import { Link } from 'expo-router';
+import { useEffect, useState } from 'react';
 
 export type Serie = {
   id: number,
@@ -45,29 +46,41 @@ const SerieCard = ({ serie }: SerieProps) => {
 }
 
 export default function TabTwoScreen() {
+
+  // Créer un state pour stocker les séries (variable)
+  const [ series, setSeries ] = useState<Serie[]>([])
+
+  // Au chargement de la page on va appeler notre backend pour recuperer les series
+  // les [] permettent de donner la liste des elements qui declenche un appel de useeffect
+  useEffect(() => {
+    // appeler le backend
+    const fetchData = async () => {
+      // declenche le /series
+      const reponse = await fetch("http://localhost:3000/series", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          mode: "cors"
+      })
+      // je transforme reponse au format json
+      const data = await reponse.json()
+      // je sauvegarde les données dans mon useState
+      setSeries(data)
+      // afficher en console 
+      console.log(data)
+    }
+
+    fetchData()
+  }, [])
+
   return (
-    <ScrollView >
+    <ScrollView>
       <Text style={styles.title}>Series du moment</Text>
-      <SerieCard serie={{
-        id: 1,
-        title: "The Witcher",
-        description: "serie antologique",
-        directory: "James cameron",
-        nbEpisodes: 10,
-         season: 1,
-        image: "https://fr.web.img4.acsta.net/img/2e/33/2e3376d955135d9990e2167caa06af82.jpg"
-      }} />
-      <SerieCard serie={{
-        id: 2,
-        title: "Strangers things",
-        description: "serie antologique",
-        directory: "James cameron",
-         nbEpisodes: 3,
-
-        season: 2,
-        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJT3x8Yywazei2NHnNquI3c21YJrJW9Y_6TZTiK9IE00jvvtLZW7h_Uaa8QyiX3SeOXmnFFz9jhng8WK4p1j-5j6IKqKfP1rGdmFdb6w&s"
-      }} />
-
+      {series.map((s) => (
+        <SerieCard key={s.id} serie={s} />
+      ))}
     </ScrollView>
   );
 }
